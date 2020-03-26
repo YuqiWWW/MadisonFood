@@ -47,19 +47,18 @@ export default class GoogleMap extends React.Component {
                         animation: window.google.maps.Animation.DROP,
                         id: i
                     });
-                    // markers.push(marker);
                     marker.setMap(map);
-                    // data.push(results[i]);
-                    markersData.push({
+                    let md = {
                         marker: marker,
                         data: results[i]
-                    });
-                    this.initializeDetails(marker, results[i]);
+                    };
+                    markersData.push(md);
+                    this.initializeDetails(marker, results[i], md);
                 }
             }
         });
     }
-    initializeDetails(marker, result) {
+    initializeDetails(marker, result, md) {
         let infowindow = new window.google.maps.InfoWindow({
             content: ''
         });
@@ -78,6 +77,7 @@ export default class GoogleMap extends React.Component {
         marker.addListener('click', function () {
             infowindow.open(map, marker);
         });
+        md.infowindow = infowindow;
     }
 
     componentDidUpdate = () => {
