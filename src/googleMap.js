@@ -1,17 +1,18 @@
 import React from 'react';
-import styles from './mystyle.module.css';
+import styles from './mystyle.module.css'
 import DropDown from './dropDown'
+import ListView from './listView'
 
 let map;
-let markers = [];
-let data = [];
+let markersData = [];
+// let data = [];
 
 export default class GoogleMap extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             mapIsReady: false,
-            markers: []
+            query: 'food'
         };
     }
 
@@ -37,7 +38,7 @@ export default class GoogleMap extends React.Component {
         }, (results, status) => {
             if (status === window.google.maps.places.PlacesServiceStatus.OK) {
                 // createMarkersForPlaces(results);
-                 console.log(results);
+                console.log(results);
                 // let markers = [];
                 for (let i = 0; i < results.length; i++) {
                     let marker = new window.google.maps.Marker({
@@ -46,9 +47,13 @@ export default class GoogleMap extends React.Component {
                         animation: window.google.maps.Animation.DROP,
                         id: i
                     });
-                    markers.push(marker);
+                    // markers.push(marker);
                     marker.setMap(map);
-                    data.push(results[i]);
+                    // data.push(results[i]);
+                    markersData.push({
+                        marker: marker,
+                        data: results[i]
+                    });
                     this.initializeDetails(marker, results[i]);
                 }
             }
@@ -59,19 +64,23 @@ export default class GoogleMap extends React.Component {
             content: ''
         });
         let content = `<div class="info">${result.name}
-                            <p>Type: ${result.types.slice(0, result.types.indexOf('food') + 1)
-                                    .map((item) => item.replace('_', ' ')).join(', ')}</p>`;
+                            <p>Type: ${result.types.slice(0, result.types.indexOf(this.state.query) + 1)
+                .map((item) => item.replace('_', ' ')).join(', ')}</p>`;
         if (result.opening_hours !== undefined) {
             content += `<p>Opening now? ${result.opening_hours.open_now}</p>`;
         }
+        if (result.photos) {
+            content += '<br><br><img src="' + result.photos[0].getUrl(
+                { maxHeight: 100, maxWidth: 200 }) + '">';
+        }
         content += `<p>Ratings: ${result.rating}</p></div>`;
         infowindow.setContent(content);
-        marker.addListener('click', function() {
+        marker.addListener('click', function () {
             infowindow.open(map, marker);
         });
     }
 
-    componentDidUpdate() {
+    componentDidUpdate = () => {
         if (this.state.mapIsReady) {
             // Display the map
             map = new window.google.maps.Map(document.getElementById('map'), {
@@ -81,26 +90,35 @@ export default class GoogleMap extends React.Component {
             });
             // You also can add markers on the map below
             this.searchPlaces('food');
+            this.setState({mapIsReady: false}); // such that only one-time map init
         }
     }
 
     handleFilter = (e) => {
         let filter = e.target.value;
-        for (let i = 0; i < data.length; i ++) {
-            if (data[i].types.filter((item) => item.replace('_', ' ') == filter).length === 0) {
-                markers[i].setMap(null);
+        for (let i = 0; i < markersData.length; i++) {
+            if (markersData[i].data.types.filter((item) => item.replace('_', ' ') == filter).length === 0) {
+                markersData[i].marker.setMap(null);
             } else {
-                markers[i].setMap(map);
+                markersData[i].marker.setMap(map);
             }
         }
+        this.setState({query: filter});
     }
 
     render() {
         return (
-        <div>
-            <DropDown filter={this.handleFilter}/>
-            <div id="map" className={styles.map} />
-        </div>
+            <div>
+                <div className={styles.userinput}>
+                    <DropDown filter={this.handleFilter} />
+                    <div className={styles.row}>
+                    {markersData.filter((obj) => obj.data.types.indexOf(this.state.query.replace(' ', '_')) !== -1).map((md) => (
+                        <ListView data={md}/>
+                    ))}
+                    </div>
+                </div>
+                <div id="map" className={styles.map} />
+            </div>
         );
     }
 }
