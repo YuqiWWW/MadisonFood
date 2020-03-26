@@ -66,7 +66,11 @@ export default class GoogleMap extends React.Component {
                             <p>Type: ${result.types.slice(0, result.types.indexOf(this.state.query) + 1)
                 .map((item) => item.replace('_', ' ')).join(', ')}</p>`;
         if (result.opening_hours !== undefined) {
-            content += `<p>Opening now? ${result.opening_hours.open_now}</p>`;
+            if (result.opening_hours.open_now) {
+                content += `<p>Opening now</p>`;
+            } else {
+                content += `<p>Closed</p>`;
+            }
         }
         if (result.photos) {
             content += '<br><br><img src="' + result.photos[0].getUrl(
@@ -83,9 +87,115 @@ export default class GoogleMap extends React.Component {
     componentDidUpdate = () => {
         if (this.state.mapIsReady) {
             // Display the map
+            let styles = [
+                {
+                    "featureType": "landscape",
+                    "stylers": [
+                        {
+                            "hue": "#FFA800"
+                        },
+                        {
+                            "saturation": 0
+                        },
+                        {
+                            "lightness": 0
+                        },
+                        {
+                            "gamma": 1
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road.highway",
+                    "stylers": [
+                        {
+                            "hue": "#53FF00"
+                        },
+                        {
+                            "saturation": -73
+                        },
+                        {
+                            "lightness": 40
+                        },
+                        {
+                            "gamma": 1
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road.arterial",
+                    "stylers": [
+                        {
+                            "hue": "#FBFF00"
+                        },
+                        {
+                            "saturation": 0
+                        },
+                        {
+                            "lightness": 0
+                        },
+                        {
+                            "gamma": 1
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road.local",
+                    "stylers": [
+                        {
+                            "hue": "#00FFFD"
+                        },
+                        {
+                            "saturation": 0
+                        },
+                        {
+                            "lightness": 30
+                        },
+                        {
+                            "gamma": 1
+                        }
+                    ]
+                },
+                {
+                    "featureType": "water",
+                    "stylers": [
+                        {
+                            "hue": "#00BFFF"
+                        },
+                        {
+                            "saturation": 6
+                        },
+                        {
+                            "lightness": 8
+                        },
+                        {
+                            "gamma": 1
+                        }
+                    ]
+                },
+                {
+                    "featureType": "poi",
+                    "stylers": [
+                        {
+                            "hue": "#679714"
+                        },
+                        {
+                            "saturation": 33.4
+                        },
+                        {
+                            "lightness": -25.4
+                        },
+                        {
+                            "gamma": 1
+                        }
+                    ]
+                }
+            ];
+
             map = new window.google.maps.Map(document.getElementById('map'), {
                 center: { lat: 43.0767822, lng: -89.3904415 },
                 zoom: 14,
+                styles: styles,
                 mapTypeControl: false
             });
             // You also can add markers on the map below
@@ -104,6 +214,7 @@ export default class GoogleMap extends React.Component {
             }
         }
         this.setState({query: filter});
+
     }
 
     render() {

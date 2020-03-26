@@ -10,9 +10,9 @@ class ListView extends React.Component{
                 this.props.data.marker.setAnimation(null);
             }}>
                 <h4>{this.props.data.data.name}</h4>
-                <p>Type: {this.props.data.data.types.map((item) => item.replace('_', ' ')).join(', ')}</p>
-                <p>Ratings: {this.props.data.data.rating} </p>
-                {this.props.data.data.photos.map((url) => (
+                <p><strong>Type:</strong> {this.props.data.data.types.map((item) => item.replace(/_/g, ' ')).join(', ')}</p>
+                <p><strong>Ratings:</strong> {this.props.data.data.rating} </p>
+                {this.props.data.data.photos && this.props.data.data.photos.map((url) => (
                     <img src={url.getUrl({ maxHeight: 100, maxWidth: 200 })}/> 
                 ))}
             </div>

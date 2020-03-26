@@ -8,6 +8,7 @@ div {
 }
 
 .userinput {
+    overflow: scroll;
     float: left;
     width: 25vw;
     height: 100vh;
