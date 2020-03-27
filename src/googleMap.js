@@ -17,7 +17,7 @@ export default class GoogleMap extends React.Component {
     }
 
     componentDidMount() {
-        const ApiKey = 'AIzaSyAJO1-VuV-q9GPnwoazEoYSgab2xDhrHHE';
+        const ApiKey = 'YOURAPIKEYHERE';
         const script = document.createElement('script');
         script.src = `https://maps.googleapis.com/maps/api/js?libraries=places&key=${ApiKey}`;
         script.async = true;
